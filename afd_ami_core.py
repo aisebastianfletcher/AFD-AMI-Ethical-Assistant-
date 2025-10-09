@@ -3,6 +3,7 @@ import pandas as pd
 from transformers import pipeline
 import os
 import openai
+import streamlit as st  # For caching
 
 class AFDInfinityAMI:
     def __init__(self, use_openai=False, openai_api_key=None):
@@ -14,16 +15,24 @@ class AFDInfinityAMI:
         if use_openai and openai_api_key:
             openai.api_key = openai_api_key
             self.llm = self._openai_generate
-            self.sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
+            self.sentiment_analyzer = self._cache_sentiment_analyzer()
         else:
-            self.llm = pipeline("text-generation", model="distilbert/distilgpt2")
-            self.sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
+            self.llm = self._cache_llm()
+            self.sentiment_analyzer = self._cache_sentiment_analyzer()
         
         if not os.path.exists(self.memory_file):
             try:
                 pd.DataFrame(columns=['prompt', 'response', 'coherence']).to_csv(self.memory_file, index=False, encoding='utf-8-sig')
             except Exception:
                 pass
+
+    @st.cache_resource
+    def _cache_llm(self):
+        return pipeline("text-generation", model="distilbert/distilgpt2")
+
+    @st.cache_resource
+    def _cache_sentiment_analyzer(self):
+        return pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
 
     def _openai_generate(self, prompt, max_length=50, truncation=True, num_return_sequences=1, **kwargs):
         try:
