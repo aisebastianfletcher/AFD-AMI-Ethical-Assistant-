@@ -19,10 +19,12 @@ Clone the repository:
 
 
 Install dependencies:
+
  ```pip install -r requirements.txt ```
 
 
 Run locally:
+
  ```streamlit run app.py ```
  
 
@@ -36,5 +38,6 @@ data/response_log.csv: Interaction memory.
 images/demo.gif: Demo of the app (post-launch).
 images/coherence_trend.png: Coherence trend graph (post-launch).
  ```
+
 ## License
 This project is licensed under CC BY-NC-ND 4.0, created by Sebastian Fletcher. See LICENSE for details.
