@@ -11,7 +11,8 @@
    cd AFD∞-AMI-Ethical-Assistant
    ```
    ## install dependencies
-   ```pip install -r requirements.txt
-   ```
+
+   ```pip install -r requirements.txt```
+
    ## run tests
    ```python -m unittest tests/test_afd_ami.py```
