@@ -1,31 +1,28 @@
-# AFD∞-AMI Ethical Assistant
+AFD∞-AMI Ethical Assistant
+An AI assistant with human-like ethical reasoning using the Autonomous Fletcher Dynamics (AFD) formula, created by [Your Name]. This app processes user prompts in real-time, translates them using a lightweight LLM, and evaluates responses with the non-reward-based AFD formula for ethical coherence.
+Features
 
-![Demo GIF](images/demo.gif)
+Real-Time Interaction: Enter prompts and receive ethically evaluated responses.
+Reflection Panel: Displays coherence scores, trend graphs, and adjustment logs.
+Human-Like Memory: Stores interactions in data/response_log.csv for learning.
+License: Protected under CC BY-NC-ND 4.0, ensuring attribution to [Your Name].
 
-A groundbreaking realtime AI assistant combining AFD (self-reflective meta-agent) and AMI (AFD + LLM Ethical Interpreter) for provable, human-like ethical reasoning. A prototype for self-correcting AGI, deployed live as of 01:30 AM BST, October 09, 2025.
+Demo
+See it in action: [https://share.streamlit.io/yourusername/AFD∞-AMI-Ethical-Assistant/main/app.py]
+Setup
 
-## Demo
-See it in action: [https://share.streamlit.io/yourusername/AFD-AMI-Ethical-Assistant/main/app.py](URL to be generated on Streamlit Sharing)
+Clone the repository: git clone https://github.com/yourusername/AFD∞-AMI-Ethical-Assistant.git
+Install dependencies: pip install -r requirements.txt
+Run locally: streamlit run app.py
 
-## How It Works
-- **AFD∞**: Self-reflects on ethics via recursive coherence scoring, learning from memory, based on the original Autonomous Fletcher Dynamics (AFD) formula created by [Your Name].
-- **AMI**: Filters LLM translations with AFD’s non-reward-based moral framework.
-See [AFD_Paper.pdf](AFD_Paper.pdf) for details.
+Repository Structure
 
-## Installation
-1. Clone the repo: `git clone https://github.com/yourusername/AFD∞-AMI-Ethical-Assistant.git`
-2. Install dependencies: `pip install -r requirements.txt`
-3. Run locally: `streamlit run app.py`
+app.py: Streamlit web interface.
+afd_ami_core.py: Core AFD∞ and AMI logic.
+AFD_Paper.pdf: Detailed AFD formula description.
+data/response_log.csv: Interaction memory.
+images/demo.gif: Demo of the app (post-launch).
+images/coherence_trend.png: Coherence trend graph (post-launch).
 
-## Usage
-- Input prompts in the web app to see ethical responses and self-reflection.
-- Memory-based learning adjusts responses over time.
-
-## Contributing
-Fork the repo, create a feature branch (e.g., `feature/your-feature`), and submit a PR to `dev`.
-
-## License
-MIT License - See [LICENSE](LICENSE)
-
-## Acknowledgements
-Developed by Sebastian Fletcher, creator of Autonomous Fletcher Dynamics (AFD), the revolutionary non-reward-based agentic framework.
+License
+This project is licensed under CC BY-NC-ND 4.0. See LICENSE for details.
