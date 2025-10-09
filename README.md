@@ -28,4 +28,4 @@ Fork the repo, create a feature branch (e.g., `feature/your-feature`), and submi
 MIT License - See [LICENSE](LICENSE)
 
 ## Acknowledgements
-Developed by [Your Name], creator of Autonomous Fletcher Dynamics (AFD), the revolutionary non-reward-based agentic framework.
+Developed by Sebastian Fletcher, creator of Autonomous Fletcher Dynamics (AFD), the revolutionary non-reward-based agentic framework.
