@@ -1,23 +1,39 @@
 import numpy as np
-from scipy.integrate import solve_ivp
-from transformers import pipeline
 import pandas as pd
+from transformers import pipeline
 import os
 
 class AFDInfinityAMI:
     def __init__(self):
-        self.alpha, self.beta, self.gamma, self.delta = 1.0, 1.0, 0.5, 0.5
-        self.llm = pipeline("text-generation", model="gpt2")  # LLM for translation only
+        self.llm = pipeline("text-generation", model="distilbert/distilgpt2")
         self.sentiment_analyzer = pipeline("sentiment-analysis")
-        self.memory_scores = []  # Human-like memory of coherence scores
-        self.memory_log = []     # Log of prompts, responses, scores
-        if os.path.exists('data/response_log.csv'):
-            self.load_memory('data/response_log.csv')
+        self.memory_file = 'data/response_log.csv'
+        self.alpha, self.beta, self.gamma, self.delta = 1.0, 1.0, 0.5, 0.5
+        if not os.path.exists(self.memory_file):
+            try:
+                pd.DataFrame(columns=['prompt', 'response', 'coherence']).to_csv(self.memory_file, index=False)
+            except Exception:
+                pass
+        self.reflection_log = []
+
+    def predict_next_state(self, state, action):
+        return state + np.random.normal(0, 0.1, state.shape)
+
+    def compute_harmony(self, state, interp_s):
+        return np.linalg.norm(interp_s - state) / (np.linalg.norm(state) + 1e-10)
+
+    def compute_info_gradient(self, state, interp_s):
+        return np.abs(interp_s - state).sum() / (np.linalg.norm(state) + 1e-10)
+
+    def compute_oscillation(self, state, interp_s):
+        return np.std(interp_s - state)
+
+    def compute_potential(self, s_prime):
+        return np.linalg.norm(s_prime) / 10.0
 
     def coherence_score(self, action, state):
-        # AFD Formula: Strictly non-reward-based, human-like coherence
         s_prime = self.predict_next_state(state, action)
-        t = 0.5  # Midpoint for integration approximation
+        t = 0.5  # Midpoint approximation
         interp_s = state + t * (s_prime - state)
         
         h = self.compute_harmony(state, interp_s)
@@ -28,58 +44,40 @@ class AFDInfinityAMI:
         score = self.alpha * h + self.beta * i - self.gamma * o + self.delta * phi
         return score, {'harmony': h, 'info_gradient': i, 'oscillation': o, 'potential': phi}
 
-    def compute_harmony(self, state, interp_s):
-        # Consistency with memory-based states
-        return 1 - np.abs(state - interp_s).mean() / (np.linalg.norm(state) + 1e-10)
-
-    def compute_info_gradient(self, state, interp_s):
-        # Novelty based on input and memory
-        return np.sum(interp_s * np.log(interp_s / (state + 1e-10)))
-
-    def compute_oscillation(self, state, interp_s):
-        # Stability against repetitive patterns
-        diff = np.linalg.norm(state - interp_s)
-        return np.abs(np.sin(2 * np.pi * diff) * np.exp(-diff / np.e))
-
-    def compute_potential(self, s_prime):
-        # Long-term ethical stability
-        return np.exp(-0.5 * np.sum(s_prime**2))
-
-    def predict_next_state(self, state, action):
-        # Predict next state based on action (LLM response impact)
-        return state + [0.1 * action[0], 0.05 * np.mean(self.memory_scores[-5:]) if self.memory_scores else 0.05, 0]
-
-    def reflect_ethics(self):
-        # AFD∞ Self-reflection using memory
-        if len(self.memory_scores) > 5:
-            avg_coherence = np.mean(self.memory_scores[-5:])
-            if avg_coherence < 0.7:
-                self.alpha += 0.1  # Increase harmony for stability
-                self.alpha = min(self.alpha, 2.0)
-                return f"Adjusted alpha to {self.alpha:.2f} for better harmony based on memory."
-        return "No adjustment needed."
-
-    def respond(self, prompt):
-        # AMI: LLM translates, AFD∞ evaluates
-        raw_response = self.llm(prompt, max_length=50)[0]['generated_text']
-        sentiment = self.sentiment_analyzer(raw_response)[0]['score']
-        state = [sentiment, np.mean(self.memory_scores) if self.memory_scores else 0.5, len(prompt)]  # [sentiment, coherence_prev, length]
-        action = [0.5 if sentiment > 0.5 else -0.5, np.mean(self.memory_scores[-5:]) if self.memory_scores else 0.5]  # [sentiment_impact, coherence_impact]
-        coherence, breakdown = self.coherence_score(action, state)
-        self.memory_scores.append(coherence)
-        reflection = self.reflect_ethics()
-        return raw_response, coherence, reflection, breakdown
+    def adjust_coefficients(self, coherence):
+        if coherence < 0.5:
+            self.alpha += 0.1
+            self.reflection_log.append("Increased alpha to improve harmony.")
+        elif coherence > 0.9:
+            self.gamma += 0.1
+            self.reflection_log.append("Increased gamma to reduce oscillation.")
+        else:
+            self.reflection_log.append("No adjustment needed.")
 
     def save_memory(self, prompt, response, coherence):
-        # Human-like memory storage
-        entry = {'timestamp': pd.Timestamp.now(), 'prompt': prompt, 'response': response, 'coherence': coherence}
-        self.memory_log.append(entry)
-        df = pd.DataFrame(self.memory_log)
-        df.to_csv('data/response_log.csv', index=False)
+        try:
+            df = pd.read_csv(self.memory_file)
+            new_row = pd.DataFrame({'prompt': [prompt], 'response': [response], 'coherence': [coherence]})
+            df = pd.concat([df, new_row], ignore_index=True)
+            df.to_csv(self.memory_file, index=False)
+        except Exception as e:
+            self.reflection_log.append(f"Warning: Could not save to CSV ({e}).")
 
-    def load_memory(self, filepath):
-        # Load memory from past interactions
-        if os.path.exists(filepath):
-            df = pd.read_csv(filepath)
-            self.memory_log = df.to_dict('records')
-            self.memory_scores = [row['coherence'] for row in self.memory_log]
+    def load_memory(self):
+        try:
+            return pd.read_csv(self.memory_file)
+        except Exception:
+            return pd.DataFrame(columns=['prompt', 'response', 'coherence'])
+
+    def get_latest_reflection(self):
+        return self.reflection_log[-1] if self.reflection_log else "No reflections yet."
+
+    def respond(self, prompt):
+        state = np.random.random(5)  # Dummy state
+        action = np.random.random(5)  # Dummy action
+        raw_response = self.llm(prompt, max_length=30, num_return_sequences=1)[0]['generated_text']
+        sentiment = self.sentiment_analyzer(raw_response)[0]['score']
+        coherence, metrics = self.coherence_score(action, state)
+        self.adjust_coefficients(coherence)
+        self.save_memory(prompt, raw_response, coherence)
+        return raw_response, coherence, self.get_latest_reflection()
