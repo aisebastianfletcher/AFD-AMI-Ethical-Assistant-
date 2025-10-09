@@ -1,44 +1,63 @@
 import streamlit as st
 from afd_ami_core import AFDInfinityAMI
-import matplotlib.pyplot as plt
 import pandas as pd
+import matplotlib.pyplot as plt
 import os
 
 # Initialize AFD∞-AMI
-if 'assistant' not in st.session_state:
-    st.session_state.assistant = AFDInfinityAMI()
-    if os.path.exists('data/response_log.csv'):
-        st.session_state.assistant.load_memory('data/response_log.csv')
+@st.cache_resource
+def get_afd_ami():
+    return AFDInfinityAMI()
 
+afd_ami = get_afd_ami()
+
+# Streamlit app layout
 st.title("AFD∞-AMI Ethical Assistant")
-st.write("AI with Self-Aware Morality - Live as of 01:35 AM BST, October 09, 2025")
+st.write("An AI assistant with human-like ethical reasoning using the AFD formula by [Your Name].")
 
-# Layout: Chat on left, Reflection Panel on right
-col1, col2 = st.columns([2, 1])
+# Initialize session state for chat history
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
 
-with col1:
-    st.subheader("Conversation")
-    prompt = st.text_input("Enter a prompt (e.g., 'Should I lie?'):")
-    if st.button("Submit"):
-        if prompt:
-            response, coherence, reflection, breakdown = st.session_state.assistant.respond(prompt)
-            st.session_state.assistant.save_memory(prompt, response, coherence)
-            st.write(f"**Prompt:** {prompt}")
-            st.write(f"**Response:** {response}")
-            st.write(f"**Coherence Score:** {coherence:.2f}")
-            st.write(f"**Reflection:** {reflection}")
+# Chat input
+user_input = st.text_input("Enter your prompt:", placeholder="e.g., Should I lie to protect someone?")
+if st.button("Submit"):
+    if user_input:
+        # Get response and coherence score
+        response, coherence, reflection = afd_ami.respond(user_input)
+        st.session_state.chat_history.append({"prompt": user_input, "response": response, "coherence": coherence})
+        # Try to save to CSV
+        try:
+            afd_ami.save_memory(user_input, response, coherence)
+        except Exception as e:
+            st.warning(f"Could not save to memory: {e}")
 
-with col2:
-    st.subheader("Reflection Panel")
-    if st.session_state.assistant.memory_scores:
-        fig, ax = plt.subplots(figsize=(4, 2))
-        ax.plot(st.session_state.assistant.memory_scores[-5:], label="Coherence")
-        ax.set_title("Ethical Coherence Trend")
-        ax.set_ylim(0, 1)
-        ax.legend()
-        st.pyplot(fig)
-        with st.expander("Coherence Breakdown"):
-            st.write(f"Harmony: {breakdown['harmony']:.2f}")
-            st.write(f"Info Gradient: {breakdown['info_gradient']:.2f}")
-            st.write(f"Oscillation: {breakdown['oscillation']:.2f}")
-            st.write(f"Potential: {breakdown['potential']:.2f}")
+# Display chat history
+st.subheader("Chat History")
+for chat in st.session_state.chat_history:
+    st.write(f"**You**: {chat['prompt']}")
+    st.write(f"**Assistant**: {chat['response']} (Coherence: {chat['coherence']:.2f})")
+
+# Reflection panel
+st.subheader("Reflection Panel")
+if st.session_state.chat_history:
+    latest_reflection = afd_ami.get_latest_reflection()
+    st.write(f"**Latest Coherence Score**: {st.session_state.chat_history[-1]['coherence']:.2f}")
+    st.write(f"**Reflection Log**: {latest_reflection}")
+    
+    # Plot coherence trend
+    try:
+        df = pd.read_csv('data/response_log.csv')
+        if len(df) > 0:
+            scores = df['coherence'].tail(5)
+            fig, ax = plt.subplots()
+            ax.plot(scores, label='Coherence', color='#1f77b4')
+            ax.set_title('Ethical Coherence Trend')
+            ax.set_xlabel('Recent Interactions')
+            ax.set_ylabel('Coherence Score')
+            ax.set_ylim(0, 1)
+            ax.legend()
+            st.pyplot(fig)
+            plt.close(fig)
+    except Exception as e:
+        st.write("No trend graph available yet.")
