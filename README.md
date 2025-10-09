@@ -2,10 +2,10 @@
 
 ![Demo GIF](images/demo.gif)
 
-A groundbreaking realtime AI assistant combining AFD∞ (self-reflective meta-agent) and AMI (AFD + LLM Ethical Interpreter) for provable, human-like ethical reasoning. A prototype for self-correcting AGI, deployed live as of 01:30 AM BST, October 09, 2025.
+A groundbreaking realtime AI assistant combining AFD (self-reflective meta-agent) and AMI (AFD + LLM Ethical Interpreter) for provable, human-like ethical reasoning. A prototype for self-correcting AGI, deployed live as of 01:30 AM BST, October 09, 2025.
 
 ## Demo
-See it in action: [https://share.streamlit.io/yourusername/AFD∞-AMI-Ethical-Assistant/main/app.py](URL to be generated on Streamlit Sharing)
+See it in action: [https://share.streamlit.io/yourusername/AFD-AMI-Ethical-Assistant/main/app.py](URL to be generated on Streamlit Sharing)
 
 ## How It Works
 - **AFD∞**: Self-reflects on ethics via recursive coherence scoring, learning from memory, based on the original Autonomous Fletcher Dynamics (AFD) formula created by [Your Name].
