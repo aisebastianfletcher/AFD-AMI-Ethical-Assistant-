@@ -30,8 +30,7 @@ prompt = st.text_input("Enter your question:", key="prompt_input")
 if st.button("Submit"):
     if prompt:
         with st.spinner("Thinking..."):
-            # Simulate thinking delay (optional, remove for real use)
-            time.sleep(1)
+            time.sleep(1)  # Simulate thinking delay
             response, coherence, reflection = afd_ami.respond(prompt)
         
         # Update history
@@ -65,7 +64,7 @@ if st.button("Submit"):
 # Display conversation history
 if st.session_state.history:
     st.subheader("Conversation History")
-    for i, entry in enumerate(reversed(st.session_state.history[-5:])):  # Show last 5 interactions
+    for i, entry in enumerate(reversed(st.session_state.history[-5:])):
         with st.expander(f"Interaction {len(st.session_state.history) - i}"):
             st.write(f"**Prompt:** {entry['prompt']}")
             st.write(f"**Response:** {entry['response']}")
