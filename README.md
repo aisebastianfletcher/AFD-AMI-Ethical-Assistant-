@@ -15,17 +15,16 @@ See it in action: [https://share.streamlit.io/yourusername/AFD∞-AMI-Ethical-As
 
 Clone the repository:
 
- ```git clone https://github.com/yourusername/AFD∞-AMI-Ethical-Assistant.git
- ```
+ ```git clone https://github.com/yourusername/AFD∞-AMI-Ethical-Assistant.git ```
 
 
 Install dependencies:
- ```pip install -r requirements.txt
- ```
+ ```pip install -r requirements.txt ```
+
 
 Run locally:
- ```streamlit run app.py
- ```
+ ```streamlit run app.py ```
+ 
 
 
 Repository Structure
