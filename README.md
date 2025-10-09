@@ -26,18 +26,24 @@ Install dependencies:
 Run locally:
 
  ```streamlit run app.py ```
- 
 
 
-Repository Structure
+# AFD_AMI_Streamlit_Repo
 
- ```app.py: Streamlit web interface.
-afd_ami_core.py: Core AFD∞ and AMI logic.
-AFD_Paper.pdf: Detailed AFD formula description.
-data/response_log.csv: Interaction memory.
-images/demo.gif: Demo of the app (post-launch).
-images/coherence_trend.png: Coherence trend graph (post-launch).
- ```
+Repository structure and starter files for the AFD∞ / AMI Streamlit app.
+
+```
+afd_ami_streamlit/
+├── app.py
+├── afd_ami_core.py
+├── AFD_Paper.pdf
+├── data/
+│   └── response_log.csv
+├── images/
+│   ├── demo.gif
+│   └── coherence_trend.png
+└── LICENSE
+```
 
 ## License
 This project is licensed under CC BY-NC-ND 4.0, created by Sebastian Fletcher. See LICENSE for details.
