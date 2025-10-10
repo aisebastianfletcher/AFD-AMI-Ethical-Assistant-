@@ -1,0 +1,3 @@
+git add .python-version app.py requirements.txt data/
+git commit -m "Update repo structure with .python-version and data directory"
+git push origin main
