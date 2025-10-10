@@ -22,9 +22,10 @@ class AFDInfinityAMI:
         
         if not os.path.exists(self.memory_file):
             try:
+                os.makedirs(os.path.dirname(self.memory_file), exist_ok=True)
                 pd.DataFrame(columns=['prompt', 'response', 'coherence']).to_csv(self.memory_file, index=False, encoding='utf-8-sig')
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"Error creating memory file: {e}")
 
     @st.cache_resource
     def _cache_llm(self):
@@ -99,7 +100,8 @@ class AFDInfinityAMI:
     def load_memory(self):
         try:
             return pd.read_csv(self.memory_file, encoding='utf-8-sig')
-        except Exception:
+        except Exception as e:
+            print(f"Error loading memory file: {e}")
             return pd.DataFrame(columns=['prompt', 'response', 'coherence'])
 
     def get_latest_reflection(self):
