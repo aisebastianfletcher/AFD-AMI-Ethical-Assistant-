@@ -2,9 +2,9 @@ streamlit==1.38.0
 transformers==4.40.0
 torch==2.5.0
 numpy==1.26.4
-pandas==2.1.4
+pandas==2.0.3  # Downgraded
 matplotlib==3.8.2
 rich==13.7.1
 openai==0.28.0
 setuptools==69.5.1
-tokenizers==0.19.1  # Updated to match transformers requirement
+tokenizers==0.15.2  # Downgraded
