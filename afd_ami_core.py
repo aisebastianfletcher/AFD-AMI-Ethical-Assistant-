@@ -28,7 +28,7 @@ class AFDInfinityAMI:
 
     @st.cache_resource
     def _cache_llm(self):
-        return pipeline("text-generation", model="distilbert/distilgpt2")
+        return pipeline("text-generation", model="gpt2")
 
     @st.cache_resource
     def _cache_sentiment_analyzer(self):
@@ -45,7 +45,7 @@ class AFDInfinityAMI:
             )
             return [{"generated_text": response.choices[0].message.content}]
         except Exception as e:
-            self.reflection_log.append(f"OpenAI error: {e}. Falling back to DistilGPT-2.")
+            self.reflection_log.append(f"OpenAI error: {e}. Falling back to GPT-2.")
             return self.llm(prompt, max_length=max_length, truncation=truncation, num_return_sequences=num_return_sequences, **kwargs)
 
     def predict_next_state(self, state, action):
@@ -93,7 +93,6 @@ class AFDInfinityAMI:
             new_row = pd.DataFrame({'prompt': [prompt], 'response': [response], 'coherence': [coherence]})
             df = pd.concat([df, new_row], ignore_index=True)
             df.to_csv(self.memory_file, index=False, encoding='utf-8-sig')
-            print("CSV saved successfully:", df.tail(1).to_dict())
         except Exception as e:
             self.reflection_log.append(f"Warning: Could not save to CSV ({e}).")
 
