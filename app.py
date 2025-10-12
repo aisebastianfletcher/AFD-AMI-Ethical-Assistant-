@@ -4,6 +4,11 @@ from afd_ami_core import AFDInfinityAMI
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
+import sys
+
+print("Current Working Directory:", os.getcwd())
+print("List of files in CWD:", os.listdir())
+print("Python sys.path:", sys.path)
 
 # Set page configuration
 st.set_page_config(page_title="AFD∞-AMI Ethical Assistant", layout="wide")
